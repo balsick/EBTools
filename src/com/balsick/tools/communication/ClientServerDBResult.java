@@ -12,8 +12,11 @@ public class ClientServerDBResult implements Serializable {
 	HashMap<Integer, ClientServerDBResultRow> rows;
 	List<ColumnStructure> columns;
 	
-	
-	
+	public String getJSon(){
+		String json = null;
+		
+		return json;
+	}
 	public HashMap<Integer, ClientServerDBResultRow> getRows() {
 		return rows;
 	}
