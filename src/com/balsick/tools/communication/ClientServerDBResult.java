@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ClientServerDBResult implements Serializable, JSonifiable {
+public class ClientServerDBResult extends ClientServerResult implements Serializable {
 	
 	private static final long serialVersionUID = -1948831896882633271L;
 	
 	HashMap<Integer, ClientServerDBResultRow> rows;
 	List<ColumnStructure> columns;
 	
+	{
+		resultType = RESULTSUCCESS;
+	}
 	public ClientServerDBResult() {
 	}
 	
@@ -49,6 +52,7 @@ public class ClientServerDBResult implements Serializable, JSonifiable {
 		HashMap<String,Object> map = new HashMap<>();
 		map.put("columns", columns);
 		map.put("rows", rows);
+		map.put("resulttype", resultType);
 		return map;
 	}
 	
@@ -56,6 +60,7 @@ public class ClientServerDBResult implements Serializable, JSonifiable {
 	public void revertFromJSon(Map<String, Object> map) {
 		this.rows = (HashMap<Integer, ClientServerDBResultRow>) map.get("rows");
 		this.columns = (List<ColumnStructure>) map.get("columns");
+		this.resultType = (String)map.get("resulttype");
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.util.Map;
 
 public abstract class JSonDictionary {
 	
-	
 	public static String getType(Object o) {
 		if (o == null)
 			return null;
@@ -16,14 +15,38 @@ public abstract class JSonDictionary {
 			return "date";
 		if (o instanceof Map)
 			return "map";
-		if (o instanceof ClientServerDBResult)
-			return "clientserverdbresult";
-		if (o instanceof ClientServerDBResultRow)
-			return "clientserverdbresultrow";
-		if (o instanceof ColumnStructure)
-			return "columnstructure";
+		if (o instanceof JSonifiable)
+			return ((JSonifiable) o).getJSonType();
+//		if (o instanceof ClientServerMessageResult)
+//			return "clientservermessageresult";
+//		if (o instanceof ClientServerDBResult)
+//			return "clientserverdbresult";
+//		if (o instanceof ClientServerDBResultRow)
+//			return "clientserverdbresultrow";
+//		if (o instanceof ColumnStructure)
+//			return "columnstructure";
 		return "null";
 	}
+	
+//	public static String getType(Object o) {
+//		if (o == null)
+//			return null;
+//		if (o instanceof String)
+//			return "string";
+//		if (o instanceof Date)
+//			return "date";
+//		if (o instanceof Map)
+//			return "map";
+//		if (o instanceof ClientServerMessageResult)
+//			return "clientservermessageresult";
+//		if (o instanceof ClientServerDBResult)
+//			return "clientserverdbresult";
+//		if (o instanceof ClientServerDBResultRow)
+//			return "clientserverdbresultrow";
+//		if (o instanceof ColumnStructure)
+//			return "columnstructure";
+//		return "null";
+//	}
 	
 	public static Class getClass(String o) {
 		switch (o) {
@@ -39,6 +62,8 @@ public abstract class JSonDictionary {
 			return ClientServerDBResultRow.class;
 		case "columnstructure":
 			return ColumnStructure.class;
+		case "clientservermessageresult":
+			return ClientServerMessageResult.class;
 		default :
 			return null;
 		}
