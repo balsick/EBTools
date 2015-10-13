@@ -4,15 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ClientServerDBResult implements Serializable {
+public class ClientServerDBResult implements Serializable, JSonifiable {
 	
 	private static final long serialVersionUID = -1948831896882633271L;
 	
 	HashMap<Integer, ClientServerDBResultRow> rows;
 	List<ColumnStructure> columns;
 	
-	
+	public ClientServerDBResult() {
+	}
 	
 	public HashMap<Integer, ClientServerDBResultRow> getRows() {
 		return rows;
@@ -40,5 +42,24 @@ public class ClientServerDBResult implements Serializable {
 		if (columns == null)
 			columns = new ArrayList<>();
 		columns.add(cs);
+	}
+	
+	@Override
+	public Map<String, Object> getJSonMap(){
+		HashMap<String,Object> map = new HashMap<>();
+		map.put("columns", columns);
+		map.put("rows", rows);
+		return map;
+	}
+	
+	@Override
+	public void revertFromJSon(Map<String, Object> map) {
+		this.rows = (HashMap<Integer, ClientServerDBResultRow>) map.get("rows");
+		this.columns = (List<ColumnStructure>) map.get("columns");
+	}
+
+	@Override
+	public String getJSonType() {
+		return "clientserverdbresult";
 	}
 }
