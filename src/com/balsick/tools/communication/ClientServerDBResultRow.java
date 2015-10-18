@@ -34,6 +34,7 @@ public class ClientServerDBResultRow implements Serializable, JSonifiable {
 		return map;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void revertFromJSon(Map<String, Object> map) {
 		values = (HashMap<String, Object>) map.get("values");

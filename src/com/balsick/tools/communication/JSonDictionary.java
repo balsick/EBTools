@@ -48,7 +48,7 @@ public abstract class JSonDictionary {
 //		return "null";
 //	}
 	
-	public static Class getClass(String o) {
+	public static Class<?> getClass(String o) {
 		switch (o) {
 		case "string":
 			return String.class;
