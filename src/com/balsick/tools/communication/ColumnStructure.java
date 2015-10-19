@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class ColumnStructure implements Serializable, JSonifiable {
 	
+	private static final long serialVersionUID = -1663879720399070434L;
 	String name;
 	String columnType;
 	

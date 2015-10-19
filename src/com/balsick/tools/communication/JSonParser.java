@@ -20,13 +20,14 @@ public abstract class JSonParser {
 	public static final String OBJECTSEPARATOR = ",";
 	public static final String VALUELIMITS = "\"";
 	
+	@SuppressWarnings("unchecked")
 	public static final String getJSon(Object obj) {
 		if (obj == null)
 			return null;
 		String json = null;
 		if (obj instanceof JSonifiable) {
 			Map<String, Object> jsonMap = ((JSonifiable)obj).getJSonMap();
-			jsonMap.put("type", ((JSonifiable)obj).getJSonType());
+			jsonMap.put("___json_type___", ((JSonifiable)obj).getJSonType());
 			return getJSon(jsonMap);
 		}
 		else if (obj instanceof Map<?, ?>) {
@@ -65,8 +66,8 @@ public abstract class JSonParser {
 				type = ((JSonifiable)obj).getJSonType();
 			else
 				type = JSonDictionary.getType(obj);
-			map.put("type", type);
-			map.put("value", getJSon(obj));
+			map.put("___json_type___", type);
+			map.put("___json_value___", getJSon(obj));
 			return getJSon(map);
 		}
 		
@@ -149,7 +150,7 @@ public abstract class JSonParser {
 			int separatorIndex = pair.indexOf(KEYVALUESEPARATOR);
 			String key = pair.substring(0, separatorIndex).trim();
 			String value = pair.substring(separatorIndex +1, pair.length()).trim();
-			if (key.contains("type")) {
+			if (key.contains("___json_type___")/* && !key.contains("resulttype")*/) {
 				type = value.replace("\"", "").replace("}", "").replace("{", "");
 			}
 			else

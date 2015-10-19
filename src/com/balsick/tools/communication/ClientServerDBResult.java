@@ -56,6 +56,7 @@ public class ClientServerDBResult extends ClientServerResult implements Serializ
 		return map;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void revertFromJSon(Map<String, Object> map) {
 		this.rows = (HashMap<Integer, ClientServerDBResultRow>) map.get("rows");

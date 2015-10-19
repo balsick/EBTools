@@ -7,10 +7,10 @@ import java.util.StringTokenizer;
 public abstract class GeneralUtils {
 	
 	public static List<String> translate(String string, String key) {
-		return traduce(string, key, "=", ";");
+		return translate(string, key, "=", ";");
 	}
 	
-	public static List<String> traduce(String string, String key, String keyValueSeparator, String valuesSeparator) {
+	public static List<String> translate(String string, String key, String keyValueSeparator, String valuesSeparator) {
 		String str = string;
 		if (string.indexOf(key+keyValueSeparator) == 0) {
 			str = str.substring((key+keyValueSeparator).length());
@@ -20,7 +20,6 @@ public abstract class GeneralUtils {
 			str = str.substring(str.indexOf('{')+1, str.indexOf('}'));
 		StringTokenizer tokenizer = new StringTokenizer(str, valuesSeparator);
 		List<String> result = new ArrayList<>();
-		int i = 0;
 		while (tokenizer.hasMoreTokens()){
 			result.add(tokenizer.nextToken());
 		}
