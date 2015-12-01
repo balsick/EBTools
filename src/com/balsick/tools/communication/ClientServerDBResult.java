@@ -16,10 +16,11 @@ public class ClientServerDBResult extends ClientServerResult implements Serializ
 	{
 		resultType = RESULTSUCCESS;
 	}
+	
 	public ClientServerDBResult() {
 	}
 	
-	public HashMap<Integer, ClientServerDBResultRow> getRows() {
+	public Map<Integer, ClientServerDBResultRow> getRows() {
 		return rows;
 	}
 
@@ -48,8 +49,8 @@ public class ClientServerDBResult extends ClientServerResult implements Serializ
 	}
 	
 	@Override
-	public Map<String, Object> getJSonMap(){
-		HashMap<String,Object> map = new HashMap<>();
+	public Map<String, Object> getJSonMap() {
+		Map<String,Object> map = new HashMap<>();
 		map.put("columns", columns);
 		map.put("rows", rows);
 		map.put("resulttype", resultType);
@@ -62,10 +63,5 @@ public class ClientServerDBResult extends ClientServerResult implements Serializ
 		this.rows = (HashMap<Integer, ClientServerDBResultRow>) map.get("rows");
 		this.columns = (List<ColumnStructure>) map.get("columns");
 		this.resultType = (String)map.get("resulttype");
-	}
-
-	@Override
-	public String getJSonType() {
-		return "clientserverdbresult";
 	}
 }

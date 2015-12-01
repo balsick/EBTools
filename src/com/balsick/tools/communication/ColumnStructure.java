@@ -36,9 +36,4 @@ public class ColumnStructure implements Serializable, JSonifiable {
 		name = (String) map.get("name");
 		columnType = (String) map.get("columnType");
 	}
-
-	@Override
-	public String getJSonType() {
-		return "columnstructure";
-	}
 }

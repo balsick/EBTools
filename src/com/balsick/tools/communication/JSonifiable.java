@@ -6,6 +6,5 @@ public interface JSonifiable {
 	
 	public Map<String, Object> getJSonMap();
 	public void revertFromJSon(Map<String, Object> map);
-	public String getJSonType();
 
 }

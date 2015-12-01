@@ -1,11 +1,10 @@
 package com.balsick.tools.communication;
 
-import java.sql.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class JSonDictionary {
-	
+	/*
 	public static String getType(Object o) {
 		if (o == null)
 			return null;
@@ -26,6 +25,10 @@ public abstract class JSonDictionary {
 //		if (o instanceof ColumnStructure)
 //			return "columnstructure";
 		return "null";
+	}*/
+	
+	public static String getFullClassName(Object o) {
+		return o.getClass().getName();
 	}
 	
 //	public static String getType(Object o) {
@@ -48,6 +51,35 @@ public abstract class JSonDictionary {
 //		return "null";
 //	}
 	
+	/**
+	 * 
+	 * @param className fully-qualified Class Name: package.classname <br/>If nested class, use '$'.
+	 * @return A new instance of the requested object, if classname was found.
+	 */
+	public static Object instantiateObject(String className) {
+		try {
+			Class<?> class_ = Class.forName(className);
+			Constructor<?> constructor = class_.getConstructor();
+			Object object = constructor.newInstance();
+			return object;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/*
 	public static Class<?> getClass(String o) {
 		switch (o) {
 		case "string":
@@ -67,6 +99,6 @@ public abstract class JSonDictionary {
 		default :
 			return null;
 		}
-	}
+	}*/
 	
 }
