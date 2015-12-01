@@ -32,9 +32,4 @@ public class ClientServerMessageResult extends ClientServerResult {
 		this.message = (String)map.get("message");
 		this.resultType = (String)map.get("resulttype");
 	}
-
-	@Override
-	public String getJSonType() {
-		return "clientservermessageresult";
-	}
 }

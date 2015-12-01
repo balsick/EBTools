@@ -20,15 +20,22 @@ public abstract class JSonParser {
 	public static final String OBJECTSEPARATOR = ",";
 	public static final String VALUELIMITS = "\"";
 	
-	@SuppressWarnings("unchecked")
+	public static final String TYPEKEY = "_jst_";
+	
 	public static final String getJSon(Object obj) {
+		return getJSon(obj, true);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static final String getJSon(Object obj, boolean internalUse) {
 		if (obj == null)
 			return null;
 		String json = null;
 		if (obj instanceof JSonifiable) {
 			Map<String, Object> jsonMap = ((JSonifiable)obj).getJSonMap();
-			jsonMap.put("___json_type___", ((JSonifiable)obj).getJSonType());
-			return getJSon(jsonMap);
+			if (internalUse)
+				jsonMap.put(TYPEKEY, JSonDictionary.getFullClassName(obj));
+			return getJSon(jsonMap, internalUse);
 		}
 		else if (obj instanceof Map<?, ?>) {
 			json = OBJECTOPENER;
@@ -36,17 +43,17 @@ public abstract class JSonParser {
 			for (Object key : map.keySet()) {
 				json += VALUELIMITS + key.toString() + VALUELIMITS;
 				json += KEYVALUESEPARATOR;
-				json += getJSon(map.get(key));
+				json += getJSon(map.get(key), internalUse);
 				json += OBJECTSEPARATOR;
 			}
 			json = json.substring(0, json.lastIndexOf(OBJECTSEPARATOR));
 			json += OBJECTCLOSER;
 		}
-		else if (obj instanceof List) {
+		else if (obj instanceof List<?>) {
 			json = ARRAYOPENER;
 			List<?> list = (List<?>)obj;
 			for (Object o : list) {
-				json += getJSon(o);
+				json += getJSon(o, internalUse);
 				json += ARRAYSEPARATOR;
 			}
 			json = json.substring(0, json.lastIndexOf(ARRAYSEPARATOR));
@@ -55,20 +62,18 @@ public abstract class JSonParser {
 		else if (obj instanceof String || obj instanceof Date) {
 			return VALUELIMITS+obj.toString()+VALUELIMITS;
 		}
-		else if (obj instanceof Number) {
+		else if (obj instanceof Number || obj instanceof Boolean) {
 			return obj.toString();
 		}
 		else {
 			System.out.println(obj.toString());
 			Map<String, Object> map = new HashMap<>();
 			String type;
-			if (obj instanceof JSonifiable)
-				type = ((JSonifiable)obj).getJSonType();
-			else
-				type = JSonDictionary.getType(obj);
-			map.put("___json_type___", type);
-			map.put("___json_value___", getJSon(obj));
-			return getJSon(map);
+			type = JSonDictionary.getFullClassName(obj);
+			if (internalUse)
+				map.put(TYPEKEY, type);
+			map.put("___json_value___", getJSon(obj, internalUse));
+			return getJSon(map, internalUse);
 		}
 		
 		return json;
@@ -125,11 +130,10 @@ public abstract class JSonParser {
 			}
 			else
 				list.add(value);
-//			int jsonstart = key != null ? key.length()+3 : 0;
 			if (json.length() == 0)
 				break;
 			try {
-				json = (key != null ? json.substring(0, keyIndex) : "") /*+ (start >= 0 && jsonstart<start ? json.substring(jsonstart, start) : "")*/ + (end+2 < json.length()-1 ? json.substring(end+2) : "");
+				json = (key != null ? json.substring(0, keyIndex) : "") + (end+2 < json.length()-1 ? json.substring(end+2) : "");
 			}
 			catch (Exception ex) {
 				System.err.println(json);
@@ -150,7 +154,7 @@ public abstract class JSonParser {
 			int separatorIndex = pair.indexOf(KEYVALUESEPARATOR);
 			String key = pair.substring(0, separatorIndex).trim();
 			String value = pair.substring(separatorIndex +1, pair.length()).trim();
-			if (key.contains("___json_type___")/* && !key.contains("resulttype")*/) {
+			if (key.contains(TYPEKEY)/* && !key.contains("resulttype")*/) {
 				type = value.replace("\"", "").replace("}", "").replace("{", "");
 			}
 			else
@@ -159,16 +163,10 @@ public abstract class JSonParser {
 		Object object = null;
 		if (type != null) {
 			try {
-				object = JSonDictionary.getClass(type).newInstance();
+				object = JSonDictionary.instantiateObject(type);
 				((JSonifiable)object).revertFromJSon(map);
-			} catch (InstantiationException e) {
-				System.err.println("type = "+type+"\nc = "+JSonDictionary.getClass(type));
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				System.err.println("type = "+type+"\nc = "+JSonDictionary.getClass(type));
-				e.printStackTrace();
 			} catch (NullPointerException e) {
-				System.err.println("type = "+type+"\nc = "+JSonDictionary.getClass(type));
+				System.err.println("type = "+type+"\nc = "+JSonDictionary.getFullClassName(object));
 				e.printStackTrace();
 			}
 		}

@@ -23,7 +23,7 @@ public class ClientServerDBResultRow implements Serializable, JSonifiable {
 		return values.get(column);
 	}
 
-	public HashMap<String, Object> getValues() {
+	public Map<String, Object> getValues() {
 		return values;
 	}
 
@@ -38,10 +38,5 @@ public class ClientServerDBResultRow implements Serializable, JSonifiable {
 	@Override
 	public void revertFromJSon(Map<String, Object> map) {
 		values = (HashMap<String, Object>) map.get("values");
-	}
-
-	@Override
-	public String getJSonType() {
-		return "clientserverdbresultrow";
 	}
 }
