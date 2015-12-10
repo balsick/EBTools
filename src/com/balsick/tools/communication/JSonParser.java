@@ -16,7 +16,7 @@ public abstract class JSonParser {
 	public static final String OBJECTCLOSER = "}";
 	public static final String ARRAYOPENER = "[";
 	public static final String ARRAYCLOSER = "]";
-	public static final String ARRAYSEPARATOR =",";
+	public static final String ARRAYSEPARATOR =", ";
 	public static final String OBJECTSEPARATOR = ",\n";
 	public static final String VALUELIMITS = "\"";
 	
@@ -45,20 +45,21 @@ public abstract class JSonParser {
 			Map<String, Object> jsonMap = ((JSonifiable)obj).getJSonMap();
 			if (internalUse)
 				jsonMap.put(TYPEKEY, JSonDictionary.getFullClassName(obj));
-			return getJSon(jsonMap, internalUse, depth +1);
+			return getJSon(jsonMap, internalUse, depth);
 		}
 		else if (obj instanceof Map<?, ?>) {
 			json += OBJECTOPENER;
+			json = addTabs(json, depth+1);
 			Map<Object, Object> map = (Map<Object, Object>)obj;
 			for (Object key : map.keySet()) {
-				json = addTabs(json, depth);
 				json += VALUELIMITS + key.toString() + VALUELIMITS;
 				json += KEYVALUESEPARATOR;
-				json += getJSon(map.get(key), internalUse, depth);
+				json += getJSon(map.get(key), internalUse, depth+1);
 				json += OBJECTSEPARATOR;
+				json = addTabs(json, depth+1);
 			}
 			json = json.substring(0, json.lastIndexOf(OBJECTSEPARATOR));
-			json = addTabs(json+"\n", depth-1);
+			json = addTabs(json+"\n", depth);
 			json += OBJECTCLOSER;
 		}
 		else if (obj instanceof List<?>) {
