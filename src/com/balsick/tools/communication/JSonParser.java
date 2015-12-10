@@ -11,56 +11,74 @@ import java.util.StringTokenizer;
 
 public abstract class JSonParser {
 	
-	public static final String KEYVALUESEPARATOR = ":";
-	public static final String OBJECTOPENER = "{";
+	public static final String KEYVALUESEPARATOR = ": ";
+	public static final String OBJECTOPENER = "{\n";
 	public static final String OBJECTCLOSER = "}";
 	public static final String ARRAYOPENER = "[";
 	public static final String ARRAYCLOSER = "]";
 	public static final String ARRAYSEPARATOR =",";
-	public static final String OBJECTSEPARATOR = ",";
+	public static final String OBJECTSEPARATOR = ",\n";
 	public static final String VALUELIMITS = "\"";
 	
 	public static final String TYPEKEY = "_jst_";
 	
 	public static final String getJSon(Object obj) {
-		return getJSon(obj, true);
+		return getJSon(obj, true, 0);
+	}
+	
+	private static String addTabs(String input, int depth) {
+		for (int i = 0; i < depth; i++)
+			input += "\t";
+		return input;
+	}
+	
+	public static final String getJSon(Object obj, boolean internalUse) {
+		return getJSon(obj, internalUse, 0);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static final String getJSon(Object obj, boolean internalUse) {
+	public static final String getJSon(Object obj, boolean internalUse, int depth) {
 		if (obj == null)
 			return null;
-		String json = null;
+		String json = "";
 		if (obj instanceof JSonifiable) {
 			Map<String, Object> jsonMap = ((JSonifiable)obj).getJSonMap();
 			if (internalUse)
 				jsonMap.put(TYPEKEY, JSonDictionary.getFullClassName(obj));
-			return getJSon(jsonMap, internalUse);
+			return getJSon(jsonMap, internalUse, depth +1);
 		}
 		else if (obj instanceof Map<?, ?>) {
-			json = OBJECTOPENER;
+			json += OBJECTOPENER;
 			Map<Object, Object> map = (Map<Object, Object>)obj;
 			for (Object key : map.keySet()) {
+				json = addTabs(json, depth);
 				json += VALUELIMITS + key.toString() + VALUELIMITS;
 				json += KEYVALUESEPARATOR;
-				json += getJSon(map.get(key), internalUse);
+				json += getJSon(map.get(key), internalUse, depth);
 				json += OBJECTSEPARATOR;
 			}
 			json = json.substring(0, json.lastIndexOf(OBJECTSEPARATOR));
+			json = addTabs(json+"\n", depth-1);
 			json += OBJECTCLOSER;
 		}
 		else if (obj instanceof List<?>) {
-			json = ARRAYOPENER;
+			json += ARRAYOPENER;
 			List<?> list = (List<?>)obj;
 			for (Object o : list) {
-				json += getJSon(o, internalUse);
+				json += getJSon(o, internalUse, depth);
 				json += ARRAYSEPARATOR;
 			}
 			json = json.substring(0, json.lastIndexOf(ARRAYSEPARATOR));
 			json += ARRAYCLOSER;
 		}
-		else if (obj instanceof String || obj instanceof Date) {
-			return VALUELIMITS+obj.toString()+VALUELIMITS;
+		else if (obj instanceof String || obj instanceof Date || obj instanceof Number || obj instanceof Boolean) {
+			String result = "";
+			if (obj instanceof String || obj instanceof Date)
+				result += VALUELIMITS+obj.toString()+VALUELIMITS;
+			else
+				result += obj.toString();
+//			return VALUELIMITS+obj.toString()+VALUELIMITS;
+			return result;
 		}
 		else if (obj instanceof Number || obj instanceof Boolean) {
 			return obj.toString();
@@ -72,8 +90,8 @@ public abstract class JSonParser {
 			type = JSonDictionary.getFullClassName(obj);
 			if (internalUse)
 				map.put(TYPEKEY, type);
-			map.put("___json_value___", getJSon(obj, internalUse));
-			return getJSon(map, internalUse);
+			map.put("___json_value___", getJSon(obj, internalUse, depth +1));
+			return getJSon(map, internalUse, depth +1);
 		}
 		
 		return json;
